@@ -1,0 +1,19 @@
+{
+  "images": [
+    {
+        "registry": "k8s.gcr.io",
+        "image_list": ["kube-proxy:v1.13.4",
+                       "kube-scheduler:v1.13.4",
+                       "kube-apiserver:v1.13.4",
+                       "kube-controller-manager:v1.13.4",
+                       "pause:3.1",
+                       "etcd:3.2.24",
+                       "coredns:1.2.6"]
+    },
+    {
+        "registry": "calico",
+        "image_list": ["node:v3.3.5",
+                       "cni:v3.3.5"]
+    }
+  ]
+}

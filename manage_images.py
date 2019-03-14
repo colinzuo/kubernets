@@ -2,43 +2,28 @@ import logging
 import subprocess
 import sys
 import argparse
+import os
+import json
 
 
 logging.basicConfig(format='%(asctime)s  %(levelname)-8s [%(name)s] %(message)s',
                 level=logging.INFO)
 
 
-action_list = ['save', 'load', 'push', 'rm']
+action_list = ['pull', 'save', 'load', 'push', 'rm']
 
 
 def handle_arguments(cl_arguments):
   parser = argparse.ArgumentParser(description='')
   # Configuration files
+  parser.add_argument('--config_file', '-c', type=str, nargs="?",
+                      help="config file about things such as images", required=True)
   parser.add_argument('--target_registry', '-r', type=str, nargs="?",
                       help="target_registry to act on", required=True)
-  parser.add_argument('--action', '-c', type=str, nargs="?",
+  parser.add_argument('--action', '-a', type=str, nargs="?",
                       help="action_list: %s" % action_list, required=True)
 
   return parser.parse_args(cl_arguments)
-
-
-save_config_2019_03_14 = [
-    {
-        "registry": "k8s.gcr.io",
-        "image_list": ["kube-proxy:v1.13.4",
-                       "kube-scheduler:v1.13.4",
-                       "kube-apiserver:v1.13.4",
-                       "kube-controller-manager:v1.13.4",
-                       "pause:3.1",
-                       "etcd:3.2.24",
-                       "coredns:1.2.6"]
-    },
-    {
-        "registry": "calico",
-        "image_list": ["node:v3.3.5",
-                       "cni:v3.3.5"]
-    }
-]
 
 
 def run_cmd(in_cmd):
@@ -46,16 +31,28 @@ def run_cmd(in_cmd):
     subprocess.call(in_cmd, shell=True)
 
 
-def save_images(in_config, target_registry):
+def pull_images(in_config):
     for item_lvl1 in in_config:
         for image in item_lvl1["image_list"]:
             logging.info("")
             logging.info("")
-            cmd = "docker tag %s/%s %s/%s" % (item_lvl1["registry"], image, target_registry, image)
+            cmd = "docker pull %s/%s" % (item_lvl1["registry"], image)
             run_cmd(cmd)
-            cmd = "docker save %s/%s -o %s_%s.tar" % (target_registry, image,
-                                                      target_registry.replace("/", "__"), image)
-            run_cmd(cmd)
+
+
+def save_images(in_config, target_registry):
+    for item_lvl1 in in_config:
+        for image in item_lvl1["image_list"]:
+            tar_path = "%s_%s.tar" % (target_registry.replace("/", "__"), image)
+            if os.path.exists(tar_path):
+                logging.info("skip %s as already exist" % tar_path)
+            else:
+                logging.info("")
+                logging.info("")
+                cmd = "docker tag %s/%s %s/%s" % (item_lvl1["registry"], image, target_registry, image)
+                run_cmd(cmd)
+                cmd = "docker save %s/%s -o %s" % (target_registry, image, tar_path)
+                run_cmd(cmd)
 
 
 def load_images(in_config, target_registry):
@@ -94,14 +91,26 @@ if __name__ == '__main__':
 
     in_target_registry = cl_args.target_registry
 
+    with open(cl_args.config_file) as f:
+        config_map = json.load(f)
+
+    if not "images" in config_map:
+        logging.error("images must be specified in config file")
+        sys.exit(-2)
+
+    image_list = config_map['images']
+
+    if cl_args.action == "pull":
+        pull_images(image_list)
+
     if cl_args.action == "save":
-        save_images(save_config_2019_03_14, in_target_registry)
+        save_images(image_list, in_target_registry)
 
     if cl_args.action == "load":
-        load_images(save_config_2019_03_14, in_target_registry)
+        load_images(image_list, in_target_registry)
 
     if cl_args.action == "push":
-        push_images(save_config_2019_03_14, in_target_registry)
+        push_images(image_list, in_target_registry)
 
     if cl_args.action == "rm":
-        rm_images(save_config_2019_03_14, in_target_registry)
+        rm_images(image_list, in_target_registry)
