@@ -8,12 +8,33 @@
                        "kube-controller-manager:v1.13.4",
                        "pause:3.1",
                        "etcd:3.2.24",
-                       "coredns:1.2.6"]
+                       "coredns:1.2.6",
+                       "cluster-proportional-autoscaler-amd64:1.4.0",
+                       "metrics-server-amd64:v0.3.1"]
     },
     {
         "registry": "calico",
         "image_list": ["node:v3.3.5",
                        "cni:v3.3.5"]
+    },
+    {   "registry": "quay.io/coreos",
+        "image_list": ["etcd:v3.2.24"]
+    },
+    {   "registry": "quay.io/calico",
+        "image_list": ["ctl:v3.4.0-amd64",
+                       "node:v3.4.0-amd64",
+                       "cni:v3.4.0-amd64",
+                       "kube-controllers:v3.4.0-amd64"]
+    },
+    {   "registry": "gcr.io/google_containers",
+        "image_list": ["pause-amd64:3.1",
+                       "kubernetes-dashboard-amd64:v1.10.1"]
+    },
+    {   "registry": "coredns",
+        "image_list": ["coredns:1.4.0"]
+    },
+    {   "registry": "",
+        "image_list": ["nginx:1.13"]
     }
   ]
 }

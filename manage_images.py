@@ -10,7 +10,7 @@ logging.basicConfig(format='%(asctime)s  %(levelname)-8s [%(name)s] %(message)s'
                 level=logging.INFO)
 
 
-action_list = ['pull', 'save', 'load', 'push', 'rm']
+action_list = ['pull', 'tag', 'save', 'load', 'push', 'rm']
 
 
 def handle_arguments(cl_arguments):
@@ -36,7 +36,22 @@ def pull_images(in_config):
         for image in item_lvl1["image_list"]:
             logging.info("")
             logging.info("")
-            cmd = "docker pull %s/%s" % (item_lvl1["registry"], image)
+            if item_lvl1["registry"]:
+                cmd = "docker pull %s/%s" % (item_lvl1["registry"], image)
+            else:
+                cmd = "docker pull %s" % (image,)
+            run_cmd(cmd)
+
+
+def tag_images(in_config, target_registry):
+    for item_lvl1 in in_config:
+        for image in item_lvl1["image_list"]:
+            logging.info("")
+            logging.info("")
+            if item_lvl1["registry"]:
+                cmd = "docker tag %s/%s %s/%s" % (item_lvl1["registry"], image, target_registry, image)
+            else:
+                cmd = "docker tag %s %s/%s" % (image, target_registry, image)
             run_cmd(cmd)
 
 
@@ -49,8 +64,6 @@ def save_images(in_config, target_registry):
             else:
                 logging.info("")
                 logging.info("")
-                cmd = "docker tag %s/%s %s/%s" % (item_lvl1["registry"], image, target_registry, image)
-                run_cmd(cmd)
                 cmd = "docker save %s/%s -o %s" % (target_registry, image, tar_path)
                 run_cmd(cmd)
 
@@ -102,6 +115,9 @@ if __name__ == '__main__':
 
     if cl_args.action == "pull":
         pull_images(image_list)
+
+    if cl_args.action == "tag":
+        tag_images(image_list, in_target_registry)
 
     if cl_args.action == "save":
         save_images(image_list, in_target_registry)
