@@ -1,0 +1,28 @@
+{
+  "images": [
+    {   "registry": "docker.elastic.co/elasticsearch",
+        "image_list":
+        [
+          "elasticsearch-oss:6.7.0"
+        ]
+    },
+    {   "registry": "docker.elastic.co/kibana",
+        "image_list":
+        [
+          "kibana-oss:6.7.0"
+        ]
+    },
+    {   "registry": "docker.elastic.co/logstash",
+        "image_list":
+        [
+          "logstash-oss:6.7.0"
+        ]
+    },
+    {   "registry": "docker.io/bitnami",
+        "image_list":
+        [
+          "nats:1.4.1-debian-9-r85"
+        ]
+    }
+  ]
+}

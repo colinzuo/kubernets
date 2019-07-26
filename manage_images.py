@@ -52,6 +52,9 @@ def tag_images(in_config, target_registry):
                 cmd = "docker tag %s/%s %s/%s" % (item_lvl1["registry"], image, target_registry, image)
             else:
                 cmd = "docker tag %s %s/%s" % (image, target_registry, image)
+            if "@" in image:
+                logging.info("@ contained, please manually tag: ref cmd %s" % cmd)
+                continue
             run_cmd(cmd)
 
 
@@ -83,6 +86,9 @@ def push_images(in_config, target_registry):
             logging.info("")
             logging.info("")
             cmd = "docker push %s/%s" % (target_registry, image)
+            if "@" in image:
+                logging.info("@ contained, please manually push: ref cmd %s" % cmd)
+                continue
             run_cmd(cmd)
 
 

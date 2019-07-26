@@ -1,0 +1,31 @@
+{
+  "images": [
+    {   "registry": "docker.io/bitnami",
+        "image_list":
+        [
+          "kafka:2.1.0",
+          "nginx:1.16.0-debian-9-r46",
+          "zookeeper:3.4.12",
+          "mongodb:4.0.3"
+        ]
+    },
+    {   "registry": "docker.io/solsson",
+        "image_list":
+        [
+          "kafka-prometheus-jmx-exporter@a23062396cd5af1acdf76512632c20ea6be76885dfc20cd9ff40fb23846557e8"
+        ]
+    },
+    {   "registry": "docker.io/javsalgar",
+        "image_list":
+        [
+          "zookeeper-exporter:latest"
+        ]
+    },
+    {   "registry": "docker.io/forekshub",
+        "image_list":
+        [
+          "percona-mongodb-exporter:latest"
+        ]
+    }
+  ]
+}
